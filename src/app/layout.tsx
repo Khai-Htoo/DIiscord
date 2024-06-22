@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 const inter = Inter({ subsets: ["latin"] });
 import { ThemeProvider } from "@/components/theme-provider";
+import "@uploadthing/react/styles.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",

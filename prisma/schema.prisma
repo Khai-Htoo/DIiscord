@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,11 +8,55 @@ datasource db {
 }
 
 model Profile {
-  id Int @id @default(autoincrement())
-  userId String @unique
-  name String
-  imageUrl String
-  email String
+  id        Int       @id @default(autoincrement())
+  userId    String    @unique
+  name      String
+  imageUrl  String
+  email     String
+  servers   Server[]
+  members   Member[]
+  channels  Channel[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Server {
+  id         Int       @id @default(autoincrement())
+  name       String
+  imageUrl   String
+  inviteCode String    @unique
+  profileId  Int
+  profile    Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  members    Member[]
+  channels   Channel[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([profileId])
+}
+
+model Member {
+  id        Int      @id @default(autoincrement())
+  role      String
+  serverId  Int
+  profileId Int
+  server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([profileId, serverId])
+}
+
+model Channel {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String
+  profileId Int
+  serverId  Int
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([profileId, serverId])
 }
