@@ -8,8 +8,9 @@ import { db } from "@/database/db";
 import { redirect } from "next/navigation";
 const SignIn = async () => {
   const profile = await initialProfile();
-  if ("id" in profile) {
-    const server = db.server.findFirst({
+
+  if (profile) {
+    const server = await db.server.findFirst({
       where: {
         members: {
           some: {
@@ -18,9 +19,8 @@ const SignIn = async () => {
         },
       },
     });
-    if ("id" in server) {
-      redirect(`/server/${server.id}`);
-    }
+
+    server && redirect(`/server/${server.id}`);
   }
   return (
     <div>

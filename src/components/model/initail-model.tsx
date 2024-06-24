@@ -23,19 +23,13 @@ import { Form } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import UploadFile from "@/components/custom/upload-image";
+import { ServerFormSchema } from "@/schema";
+import { createServer } from "@/utils/action";
+import { redirect } from "next/navigation";
 
 const InitialModel = () => {
-  const formSchema = z.object({
-    serverName: z.string().min(2, {
-      message: "Server must be at least 2 characters.",
-    }),
-    imageUrl: z.string().min(2, {
-      message: "Image url must be at least 2 characters.",
-    }),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof ServerFormSchema>>({
+    resolver: zodResolver(ServerFormSchema),
     defaultValues: {
       serverName: "",
       imageUrl: "",
@@ -44,8 +38,12 @@ const InitialModel = () => {
 
   const isLoading = form.formState.isLoading;
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof ServerFormSchema>) {
+    const server = await createServer(values);
+    console.log(server);
+
+    form.reset();
+    server?.id && redirect(`/server/${server.id}`);
   }
 
   return (
